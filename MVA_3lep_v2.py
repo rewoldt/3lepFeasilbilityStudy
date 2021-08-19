@@ -93,8 +93,12 @@ for file in range(len(fileName)):
   lepton3_charge = []
   MET=[]
   MET_phi = []
+  counter_all = 0
+  counter_pt = 0
+  counter_ossf = 0
 
-  for entry in xrange(9999):
+
+  for entry in xrange(nevents):
     t.GetEntry(entry)
     taus = t.TruthTaus
     bsm = t.TruthBSM
@@ -118,8 +122,8 @@ for file in range(len(fileName)):
 
 
 	#=========================
-    print entry*100/t.GetEntries(), "% complete."
-    print "This is entry number: ", entry+1
+#    print entry*100/t.GetEntries(), "% complete."
+#    print "This is entry number: ", entry+1
 	#=========================
 	# print Met.get(1).met()
     metvector = ROOT.TLorentzVector(0,0,0,0)
@@ -131,12 +135,17 @@ for file in range(len(fileName)):
       muon_list.append(m)
 
     lepton_list = electron_list + muon_list
-    print len(lepton_list)
+    #print len(lepton_list)
     electron_list.sort(reverse = True, key=(lambda l: l.p4().Pt()))
     muon_list.sort(reverse = True, key=(lambda l: l.p4().Pt()))
     lepton_list.sort(reverse = True, key=(lambda l: l.p4().Pt()))
     
     if len(lepton_list) < 3: continue
+    counter_all += 1
+    if lepton_list[0].pt() < 30000: continue
+    counter_pt += 1
+    if abs(lepton_list[0].pdgId() + lepton_list[1].pdgId() + lepton_list[2].pdgId()) not in [11, 13]: continue #same flavor, opposite sign, and one of either flavor
+    counter_ossf += 1
     lepton1_pt.append(lepton_list[0].p4().Pt())
     lepton2_pt.append(lepton_list[1].p4().Pt())
     lepton3_pt.append(lepton_list[2].p4().Pt())
@@ -157,8 +166,9 @@ for file in range(len(fileName)):
     MET.append(metvector.Pt())
     MET_phi.append(metvector.Phi())
 
+  print 'all with 3+ lep:', counter_all, '\n With 1 lep with pt > 30GeV', counter_pt, float(counter_pt)/counter_all, '\n With ossf pair:', counter_ossf, float(counter_ossf)/counter_all, '\n'
   data = zip([lepton1_pt,lepton2_pt,lepton3_pt,lepton1_eta,lepton2_eta,lepton3_eta,lepton1_phi,lepton2_phi,lepton3_phi,MET,MET_phi,lepton1_flavor, lepton2_flavor, lepton3_flavor,lepton1_charge,lepton2_charge,lepton3_charge])
-  with open(name, mode='w') as df:
+  with open('allevents_'+name, mode='w') as df:
 #  with open('bkg-newvar.csv', mode='w') as df:
     df_writer = csv.writer(df, dialect='excel', delimiter=',', quoting=csv.QUOTE_NONE)
     df_writer.writerow(["","lepton1_pt","lepton2_pt","lepton3_pt","lepton1_eta","lepton2_eta","lepton3_eta","lepton1_phi","lepton2_phi","lepton3_phi","MET","MET_phi","lepton1_flavor", "lepton2_flavor", "lepton3_flavor","lepton1_charge","lepton2_charge","lepton3_charge"])
