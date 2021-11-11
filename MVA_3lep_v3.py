@@ -46,9 +46,9 @@ fileName_benchmark_800 = "/cluster/home/amyrewoldt/DAOD/3lep_Hplus800_slep110_Xn
 fileName_benchmark_1000 = "/cluster/home/amyrewoldt/DAOD/3lep_benchmark_Hplus1000_slep110/truth1/DAOD_TRUTH1.aod.pool.root"
 fileName_benchmark_800_fixed = "/cluster/home/amyrewoldt/DAOD/3lep_Hplus800_slep110_Xn165_Xc120_fixed/truth1/DAOD_TRUTH1.test.pool.root"
 
-#fileName = [fileName_benchmark_500,fileName_benchmark_600,fileName_benchmark_700,fileName_benchmark_800,fileName_benchmark_1000,fileName_ttb] #,fileName_benchmark_1000_slep_110]
+fileName = [fileName_benchmark_500,fileName_benchmark_600,fileName_benchmark_700,fileName_benchmark_800,fileName_benchmark_1000,fileName_ttb] #,fileName_benchmark_1000_slep_110]
 #fileName = [fileName_ttb] #,fileName_benchmark_1000_slep_110]
-fileName = [fileName_benchmark_800,fileName_ttb] #,fileName_benchmark_1000_slep_110]
+#fileName = [fileName_benchmark_800,fileName_ttb] #,fileName_benchmark_1000_slep_110]
 
 ########################################
 ############# Code Starts ##############
@@ -61,17 +61,17 @@ for file in range(len(fileName)):
   nevents = t.GetEntries()
 
   if '500' in fileName[file]:
-    name = 'sig500-allvar.csv'
+    name = 'sig500-allvar-btag.csv'
   if '600' in fileName[file]:
-    name = 'sig600-allvar.csv'
+    name = 'sig600-allvar-btag.csv'
   if '700' in fileName[file]:
-    name = 'sig700-allvar.csv'
+    name = 'sig700-allvar-btag.csv'
   if '800' in fileName[file]:
-    name = 'sig800-allvar.csv'
+    name = 'sig800-allvar-btag.csv'
   if '1000' in fileName[file]:
-    name = 'sig1000-allvar.csv'
+    name = 'sig1000-allvar-btag.csv'
   if 'ttb' in fileName[file]:
-    name = 'bkg-allvar.csv'
+    name = 'bkg-allvar-btag.csv'
 
   ##========================
   print "Working on ", fileName[file]
@@ -118,26 +118,35 @@ for file in range(len(fileName)):
     leps_neu = []
     leps_ch = []
     selected_lepton_list = []
+    B_list = []
     lepton_vector = ROOT.TLorentzVector(0,0,0,0)
     electron_vector = ROOT.TLorentzVector()
     muons_vector = ROOT.TLorentzVector()
 
 
 	#=========================
-    print entry*100/t.GetEntries(), "% complete."
-    print "This is entry number: ", entry+1
+ #   print entry*100/t.GetEntries(), "% complete."
+ #   print "This is entry number: ", entry+1
 	#=========================
 	# print Met.get(1).met()
     metvector = ROOT.TLorentzVector(0,0,0,0)
     metvector.SetPtEtaPhiM(met.met(), 0, met.phi(), 0)
+    for pp in p:
+      if pp.absPdgId() != 5: continue
+      B_list.append(pp)
 
     for l in electrons:
-      electron_list.append(l)
-    for m in muons:
-      muon_list.append(m)
+      for b in B_list:
+        if l.p4().DeltaR(b.p4()) < .4:
+          electron_list.append(l)
 
+    for m in muons:
+      for b in B_list:
+        if m.p4().DeltaR(b.p4()) < .4:
+          muon_list.append(m)
+    
     lepton_list = electron_list + muon_list
-    print len(lepton_list)
+#    print len(lepton_list)
     electron_list.sort(reverse = True, key=(lambda l: l.p4().Pt()))
     muon_list.sort(reverse = True, key=(lambda l: l.p4().Pt()))
     lepton_list.sort(reverse = True, key=(lambda l: l.p4().Pt()))
@@ -166,6 +175,8 @@ for file in range(len(fileName)):
     visible_pt.append(lepton_vector.Pt())
     transverse_mass.append((lepton_vector+metvector).Mt())
 
+    Mll = None
+    DR = None
     for pair in [(0, 1), (0, 2), (1, 2)]:
   #      print leps[pair[0]].pdgId() + leps[pair[1]].pdgId(), leps[pair[0]].pdgId()
       if lepton_list[pair[0]].pdgId() + lepton_list[pair[1]].pdgId() != 0: continue #if these two are same flavor op sign ex: -11 +11 
@@ -175,6 +186,7 @@ for file in range(len(fileName)):
       break 
     dilep_mass.append(Mll)
     dilep_DR.append(DR)
+    print len(dilep_mass), len(dilep_DR)
 
   data = zip([lepton1_pt,lepton2_pt,lepton3_pt,lepton1_eta,lepton2_eta,lepton3_eta,lepton1_phi,lepton2_phi,lepton3_phi,MET,MET_phi,lepton1_flavor, lepton2_flavor, lepton3_flavor,lepton1_charge,lepton2_charge,lepton3_charge,visible_pt,transverse_mass,dilep_mass,dilep_DR])
   with open(name, mode='w') as df:
