@@ -1,9 +1,11 @@
 **Charged higgs to Hplus feasibility study**
 
-tier3 contains all files (DAOD, runcards, event generation scripts, etc) \\
+tier3 contains all files (DAOD, runcards, event generation scripts, etc):
+
     path: /cluster/home/amyrewoldt
 
 AthDerivation version used to run over PythonScripts
+
     setupATLAS
     cd ProjectDirectory
     asetup AthDerivation,21.2.48.0, here
