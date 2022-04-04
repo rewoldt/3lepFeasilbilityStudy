@@ -119,6 +119,9 @@ for file in range(len(fileName)):
   dilep_DR = []
   dilep_mass = [] 
   transverse_mass = []
+  counter_3lep = 0
+  counter_ossf = 0
+  counter = 0
 
 #  for entry in xrange(1000):
   for entry in xrange(nevents):
@@ -144,7 +147,7 @@ for file in range(len(fileName)):
     electron_vector = ROOT.TLorentzVector()
     muons_vector = ROOT.TLorentzVector()
 
-
+  
 	#=========================
  #   print entry*100/t.GetEntries(), "% complete."
  #   print "This is entry number: ", entry+1
@@ -156,27 +159,30 @@ for file in range(len(fileName)):
       if pp.absPdgId() != 5: continue
       B_list.append(pp)
 
-    for l in electrons:
-      for b in B_list:
-        if l.p4().DeltaR(b.p4()) < .4:
+    for b in B_list:
+      for l in electrons:
+        if l.p4().DeltaR(b.p4()) > .4:
           electron_list.append(l)
-
-    for m in muons:
-      for b in B_list:
-        if m.p4().DeltaR(b.p4()) < .4:
+      for m in muons:
+        if m.p4().DeltaR(b.p4()) > .4:
           muon_list.append(m)
-    
-    leps = electron_list + muon_list
-#    lepton_list = electron_list + muon_list
+      break
+
+#    leps = electron_list + muon_list
+    lepton_list = electron_list + muon_list
 #    print len(lepton_list)
     electron_list.sort(reverse = True, key=(lambda l: l.p4().Pt()))
     muon_list.sort(reverse = True, key=(lambda l: l.p4().Pt()))
-    leps.sort(reverse = True, key=(lambda l: l.p4().Pt()))
-#    lepton_list.sort(reverse = True, key=(lambda l: l.p4().Pt()))
-    if len(leps) < 3: continue
+#    leps.sort(reverse = True, key=(lambda l: l.p4().Pt()))
+    lepton_list.sort(reverse = True, key=(lambda l: l.p4().Pt()))
+      
+#    if len(leps) < 3: continue
+    if len(lepton_list) < 3: continue
+#    counter_3lep += 1
 #    if len(lepton_list) < 3: continue
-#    if abs(lepton_list[0].pdgId() + lepton_list[1].pdgId() + lepton_list[2].pdgId()) not in [11,13]: continue
-    lepton_list.append(selectLeptons(leps)) 
+#    lepton_list = selectLeptons(leps)
+    if abs(lepton_list[0].pdgId() + lepton_list[1].pdgId() + lepton_list[2].pdgId()) not in [11,13]: continue
+#    counter_ossf += 1
     lepton1_pt.append(lepton_list[0].p4().Pt())
     lepton2_pt.append(lepton_list[1].p4().Pt())
     lepton3_pt.append(lepton_list[2].p4().Pt())
@@ -203,7 +209,7 @@ for file in range(len(fileName)):
     Mll = None
     DR = None
     for pair in [(0, 1), (0, 2), (1, 2)]:
-  #      print leps[pair[0]].pdgId() + leps[pair[1]].pdgId(), leps[pair[0]].pdgId()
+#        print leps[pair[0]].pdgId() + leps[pair[1]].pdgId(), leps[pair[0]].pdgId()
       if lepton_list[pair[0]].pdgId() + lepton_list[pair[1]].pdgId() != 0: continue #if these two are same flavor op sign ex: -11 +11 
       p4 = lepton_list[pair[0]].p4() + lepton_list[pair[1]].p4()
       Mll = p4.M()
@@ -212,6 +218,7 @@ for file in range(len(fileName)):
     dilep_mass.append(Mll)
     dilep_DR.append(DR)
 
+#  print counter, counter_3lep, counter_ossf, float(counter_3lep)/counter, float(counter_ossf)/counter
   data = zip([lepton1_pt,lepton2_pt,lepton3_pt,lepton1_eta,lepton2_eta,lepton3_eta,lepton1_phi,lepton2_phi,lepton3_phi,MET,MET_phi,lepton1_flavor, lepton2_flavor, lepton3_flavor,lepton1_charge,lepton2_charge,lepton3_charge,visible_pt,transverse_mass,dilep_mass,dilep_DR])
   with open(name, mode='w') as df:
 #  with open('bkg-high-low-var.csv', mode='w') as df:
