@@ -1,6 +1,6 @@
-Charged higgs to Hplus feasibility study
+**Charged higgs to Hplus feasibility study**
 
-tier3 contains all files (DAOD, runcards, event generation scripts, etc)
+tier3 contains all files (DAOD, runcards, event generation scripts, etc) \\
     path: /cluster/home/amyrewoldt
 
 AthDerivation version used to run over PythonScripts
