@@ -10,12 +10,6 @@ tier3 contains all files (DAOD, runcards, event generation scripts, etc)
     cd ProjectDirectory
     asetup AthDerivation,21.2.48.0, here
 
-### AthDerivation version used to run over PythonScripts
-
-	setupATLAS
-	cd ProjectDirectory
-	asetup AthDerivation,21.2.48.0, here
-
 ### Standalone Event Generation Using Madgraph 2.7.3
 
 	wget https://launchpad.net/mg5amcnlo/2.0/2.7.x/+download/MG5_aMC_v2.7.3.tar.gz
@@ -35,7 +29,7 @@ tier3 contains all files (DAOD, runcards, event generation scripts, etc)
 Locally run:
 
     ssh -N -f -L localhost:8000:localhost:8000 usrname@master.tier3-atlas.uta.edu
-On tier3 (must install miniconda first)
+On tier3 (Setupnstrucitons: [here](https://gitlab.cern.ch/arewoldt/3lep-analysis/-/blob/master/JupyterNotebooks/Jupyter-notebook-tier3-setup.pdf))
 
     source miniconda/bin/activate
     jupyter notebook --port=8000 --no-browser
