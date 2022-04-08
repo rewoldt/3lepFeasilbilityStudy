@@ -24,8 +24,10 @@ tier3 contains all files (DAOD, runcards, event generation scripts, etc)
 	./bin proc_card_mg5_3lep.dat
 There should be a directory *mssm_3lep* after completion of this step. This directory should be set up to run mssm 3lep process. 
 To generate events:
+
 	./bin/generate_events
-To create DAOD use script Generate_Script.sh (clone from Standalone-MadgraphEventGenerationi directory). Make sure to change the setup script to either setupATLAS or path to your own setup script. For DAOD'si run:
+For DAOD's run (make sure to change the setup script to either setupATLAS or path to your own setup script)
+
 	./Generate.sh
 
 ### OTFR Event Generation
