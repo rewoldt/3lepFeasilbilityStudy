@@ -20,13 +20,13 @@ tier3 contains all files (DAOD, runcards, event generation scripts, etc)
 	wget https://launchpad.net/mg5amcnlo/2.0/2.7.x/+download/MG5_aMC_v2.7.3.tar.gz
 	gunzip MG5_aMC_v2.7.3.tar.gz
 	cd MG5_aMC_v2_7_3
-	git clone *copy proc card git http here*
+	wget https://gitlab.cern.ch/arewoldt/3lep-analysis/-/blob/master/Standalone-MadgraphEventGeneration/proc_card_mg5_3lep.dat
 	./bin proc_card_mg5_3lep.dat
-	There should be a directory *mssm_3lep* after completion of this step. This directory should be set up to run mssm 3lep process. 
-	To generate events:
+There should be a directory *mssm_3lep* after completion of this step. This directory should be set up to run mssm 3lep process. 
+To generate events:
 	./bin/generate_events
-	To create DAOD use script Generate_Script.sh (clone from Standalone-MadgraphEventGenerationi directory). Make sure to change the setup script to either setupATLAS or path to your own setup script. For DAOD'si run:
-	./Generate_Script.sh
+To create DAOD use script Generate_Script.sh (clone from Standalone-MadgraphEventGenerationi directory). Make sure to change the setup script to either setupATLAS or path to your own setup script. For DAOD'si run:
+	./Generate.sh
 
 ### OTFR Event Generation
 
