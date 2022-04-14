@@ -137,12 +137,12 @@ for file in range(len(fileName)):
 
     for l in electrons:
       for b in B_list:
-        if l.p4().DeltaR(b.p4()) > .4:
+        if l.p4().DeltaR(b.p4()) < .4:
           electron_list.append(l)
 
     for m in muons:
       for b in B_list:
-        if m.p4().DeltaR(b.p4()) > .4:
+        if m.p4().DeltaR(b.p4()) < .4:
           muon_list.append(m)
     
     lepton_list = electron_list + muon_list
