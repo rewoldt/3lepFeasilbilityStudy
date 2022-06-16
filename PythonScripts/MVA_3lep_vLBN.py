@@ -15,25 +15,6 @@ if(not ROOT.xAOD.Init().isSuccess()): print "Failed xAOD.Init()"
 ########### Functions ###########
 #################################
 
-def get_children(particle):
-  list = []
-  for i in range(particle.nChildren()):
-#    print "parent: ", particle.pdgId(), ", child particle: ", particle.child(i).pdgId(), ", mass: ", particle.child(i).m(), ", pt: ", particle.child(i).pt(), "\n"
-    if particle.child(i).nChildren() == 0:
-      if particle.child(i).absPdgId() in [11,13]:
-        list.append(particle.child(i))
-    else:
-      list += get_children(particle.child(i))
-  return list
-
-def pdg(n):
-	#takes a particles container and returns the pdgId
-	return n.pdgId()
-
-def PT(n):
-	#takes a particles container and returns the pt
-	return n.p4().Pt()
-
 #################################
 ######### Opening File ##########
 #################################
@@ -75,11 +56,6 @@ for file in range(len(fileName)):
   ##========================
   print "Working on ", fileName[file]
 
-  DR = []
-  Mll = []
-  lepton1 = []
-  lepton2 = []
-  lepton3 = []
   lepton1_px = []
   lepton1_py = []
   lepton1_pz = []
@@ -96,11 +72,6 @@ for file in range(len(fileName)):
   MET_py=[]
   MET_pz=[]
   MET_E=[]
-  MET_phi = []
-  visible_pt = []
-  dilep_DR = []
-  dilep_mass = [] 
-  transverse_mass = []
 
   for entry in xrange(nevents):
     t.GetEntry(entry)
@@ -117,7 +88,6 @@ for file in range(len(fileName)):
     lepton_list = []
     muon_list = []
     electron_list = []
-    selected_lepton_list = []
     B_list = []
     lepton_vector = ROOT.TLorentzVector(0,0,0,0)
     electron_vector = ROOT.TLorentzVector()
@@ -131,20 +101,20 @@ for file in range(len(fileName)):
 	# print Met.get(1).met()
     metvector = ROOT.TLorentzVector(0,0,0,0)
     metvector.SetPtEtaPhiM(met.met(), 0, met.phi(), 0)
+
     for pp in p:
       if pp.absPdgId() != 5: continue
       B_list.append(pp)
 
-    for l in electrons:
-      for b in B_list:
-        if l.p4().DeltaR(b.p4()) < .4:
+    for b in B_list:
+      for l in electrons:
+        if l.p4().DeltaR(b.p4()) > .4:
           electron_list.append(l)
-
-    for m in muons:
-      for b in B_list:
-        if m.p4().DeltaR(b.p4()) < .4:
+      for m in muons:
+        if m.p4().DeltaR(b.p4()) > .4:
           muon_list.append(m)
-    
+      break
+ 
     lepton_list = electron_list + muon_list
 #    print len(lepton_list)
     electron_list.sort(reverse = True, key=(lambda l: l.p4().Pt()))
@@ -165,10 +135,6 @@ for file in range(len(fileName)):
     lepton1_E.append(lepton_list[0].p4().E())
     lepton2_E.append(lepton_list[1].p4().E())
     lepton3_E.append(lepton_list[2].p4().E())
-#    lepton1.append([lepton1_px,lepton1_py,lepton1_pz,lepton1_E])
-#    lepton2.append([lepton2_px,lepton2_py,lepton2_pz,lepton2_E])
-#    lepton3.append([lepton3_px,lepton3_py,lepton3_pz,lepton3_E])
-    #lepton_vector = lepton_list[0].p4() + lepton_list[1].p4() + lepton_list[2].p4()
     metpz = 0
     MET_E.append(metvector.Pt())
     MET_px.append(metvector.Px())
